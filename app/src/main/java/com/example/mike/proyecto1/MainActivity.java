@@ -1,9 +1,12 @@
 package com.example.mike.proyecto1;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -21,6 +24,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FacebookSdk.sdkInitialize(getApplicationContext());
+
+        if(estalogueado()){
+            Intent intent = new Intent(getApplicationContext(),NavigationActivity.class);
+            startActivity(intent);
+        }
         setContentView(R.layout.activity_main);
 
         loginButton = (LoginButton) findViewById(R.id.login_button);
@@ -32,20 +40,34 @@ public class MainActivity extends AppCompatActivity {
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-               titulolbl.setText (loginResult.getAccessToken().getUserId());
+                Intent intent = new Intent(getApplicationContext(),NavigationActivity.class);
+                startActivity(intent);
             }
 
             @Override
+
             public void onCancel() {
-               titulolbl.setText("User Cancel Request");
+
+                Toast.makeText(getApplicationContext(), "Cancelaste el login", Toast.LENGTH_LONG);
             }
 
             @Override
             public void onError(FacebookException error) {
-                titulolbl.setText("Facebook Error");
+
+                Toast.makeText(getApplicationContext(),"Cancelaste el login",Toast.LENGTH_LONG);
             }
         });
 
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        callbackManager.onActivityResult(requestCode, resultCode, data);
+
+    }
+
+    private boolean estalogueado(){
+        return AccessToken.getCurrentAccessToken()!=null;
     }
 
 
